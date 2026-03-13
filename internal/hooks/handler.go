@@ -26,6 +26,7 @@ import (
 	"github.com/atbabers/intentra-cli/internal/config"
 	"github.com/atbabers/intentra-cli/internal/debug"
 	"github.com/atbabers/intentra-cli/internal/device"
+	"github.com/atbabers/intentra-cli/internal/queue"
 	"github.com/atbabers/intentra-cli/internal/scanner"
 	"github.com/atbabers/intentra-cli/pkg/models"
 )
@@ -998,12 +999,25 @@ func handleStopEvent(sessionKey, tool string, event *models.Event, rawMap map[st
 			debug.Log("Syncing to %s (config auth)", cfg.Server.Endpoint)
 			if err := client.SendScan(scan); err != nil {
 				debug.Warn("sync failed: %v", err)
+			} else {
+				synced = true
 			}
+		}
+	}
+
+	if !synced {
+		if err := queue.Enqueue(scan); err != nil {
+			debug.Warn("failed to queue scan offline: %v", err)
 		}
 	}
 
 	if synced && scan.ID != "" {
 		saveLastScanID(sessionKey, scan.ID)
+		// Opportunistically flush any previously queued scans in background
+		// to avoid blocking the hook handler hot path
+		if creds != nil {
+			go queue.FlushWithJWT(creds.AccessToken)
+		}
 	}
 
 	if debug.Enabled {

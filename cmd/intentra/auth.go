@@ -17,6 +17,7 @@ import (
 	"github.com/atbabers/intentra-cli/internal/debug"
 	"github.com/atbabers/intentra-cli/internal/device"
 	"github.com/atbabers/intentra-cli/internal/httputil"
+	"github.com/atbabers/intentra-cli/internal/queue"
 	"github.com/spf13/cobra"
 )
 
@@ -134,6 +135,12 @@ func runLogin(noBrowser, force bool) error {
 		fmt.Println("You can retry by running 'intentra login' again.")
 	} else {
 		fmt.Println("✓ Device registered")
+	}
+
+	// Flush any scans queued while unauthenticated
+	if pending := queue.PendingCount(); pending > 0 {
+		fmt.Printf("\nFound %d offline scan(s). Syncing...\n", pending)
+		queue.FlushWithJWT(creds.AccessToken)
 	}
 
 	fmt.Println()
@@ -414,6 +421,8 @@ func pollForToken(endpoint string, deviceResp *auth.DeviceCodeResponse) (*auth.T
 	}
 }
 
+var browserLauncher func(url string) error
+
 func openBrowser(rawURL string) error {
 	parsed, err := url.Parse(rawURL)
 	if err != nil {
@@ -421,6 +430,10 @@ func openBrowser(rawURL string) error {
 	}
 	if parsed.Scheme != "https" {
 		return fmt.Errorf("refusing to open non-HTTPS URL: %s", parsed.Scheme)
+	}
+
+	if browserLauncher != nil {
+		return browserLauncher(rawURL)
 	}
 
 	var cmd *exec.Cmd

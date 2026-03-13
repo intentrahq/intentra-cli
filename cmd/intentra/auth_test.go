@@ -4,6 +4,10 @@ import (
 	"testing"
 )
 
+func init() {
+	browserLauncher = func(url string) error { return nil }
+}
+
 func TestOpenBrowserRejectsHTTP(t *testing.T) {
 	err := openBrowser("http://evil.com")
 	if err == nil {
@@ -19,12 +23,9 @@ func TestOpenBrowserRejectsJavascript(t *testing.T) {
 }
 
 func TestOpenBrowserAcceptsHTTPS(t *testing.T) {
-	// This will fail to actually open a browser in CI, but should not reject the URL
 	err := openBrowser("https://example.com")
-	// We allow err != nil since the browser command may not exist in test env,
-	// but the error should NOT be about the scheme
-	if err != nil && err.Error() == "refusing to open non-HTTPS URL: http" {
-		t.Error("openBrowser should accept HTTPS URLs")
+	if err != nil {
+		t.Errorf("openBrowser should accept HTTPS URLs, got: %v", err)
 	}
 }
 

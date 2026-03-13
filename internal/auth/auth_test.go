@@ -128,22 +128,22 @@ func TestEncryptDecrypt(t *testing.T) {
 
 	plaintext := []byte("hello, world! this is a test of encryption.")
 
-	ciphertext, err := encrypt(plaintext, key)
+	ciphertext, err := Encrypt(plaintext, key)
 	if err != nil {
-		t.Fatalf("encrypt() error: %v", err)
+		t.Fatalf("Encrypt() error: %v", err)
 	}
 
 	if string(ciphertext) == string(plaintext) {
 		t.Error("ciphertext should differ from plaintext")
 	}
 
-	decrypted, err := decrypt(ciphertext, key)
+	decrypted, err := Decrypt(ciphertext, key)
 	if err != nil {
-		t.Fatalf("decrypt() error: %v", err)
+		t.Fatalf("Decrypt() error: %v", err)
 	}
 
 	if string(decrypted) != string(plaintext) {
-		t.Errorf("decrypt() = %q, want %q", string(decrypted), string(plaintext))
+		t.Errorf("Decrypt() = %q, want %q", string(decrypted), string(plaintext))
 	}
 }
 
@@ -151,12 +151,12 @@ func TestEncryptDecrypt_WrongKey(t *testing.T) {
 	key1, _ := generateRandomKey()
 	key2, _ := generateRandomKey()
 
-	ciphertext, err := encrypt([]byte("secret"), key1)
+	ciphertext, err := Encrypt([]byte("secret"), key1)
 	if err != nil {
-		t.Fatalf("encrypt() error: %v", err)
+		t.Fatalf("Encrypt() error: %v", err)
 	}
 
-	_, err = decrypt(ciphertext, key2)
+	_, err = Decrypt(ciphertext, key2)
 	if err == nil {
 		t.Error("decrypt with wrong key should fail")
 	}
@@ -209,17 +209,17 @@ func TestWriteReadEncryptedCache(t *testing.T) {
 }
 
 func TestDerivedKeyConsistency(t *testing.T) {
-	key1, err := getDerivedKey()
+	key1, err := DeriveKey(CacheKeySalt, CacheKeyInfo)
 	if err != nil {
-		t.Fatalf("getDerivedKey() error: %v", err)
+		t.Fatalf("DeriveKey() error: %v", err)
 	}
-	key2, err := getDerivedKey()
+	key2, err := DeriveKey(CacheKeySalt, CacheKeyInfo)
 	if err != nil {
-		t.Fatalf("getDerivedKey() second call error: %v", err)
+		t.Fatalf("DeriveKey() second call error: %v", err)
 	}
 
 	if string(key1) != string(key2) {
-		t.Error("getDerivedKey() should return consistent results")
+		t.Error("DeriveKey() should return consistent results")
 	}
 	if len(key1) != keySize {
 		t.Errorf("key length = %d, want %d", len(key1), keySize)

@@ -21,6 +21,10 @@ const (
 	encryptedCacheVersion = 1
 	nonceSize             = 12
 	keySize               = 32
+
+	// CacheKeySalt and CacheKeyInfo provide domain separation for credential encryption keys.
+	CacheKeySalt = "intentra-cache-key-v1"
+	CacheKeyInfo = "credential-encryption"
 )
 
 func getEncryptedCacheFile() (string, error) {
@@ -54,7 +58,7 @@ func WriteEncryptedCache(creds *Credentials) error {
 		return fmt.Errorf("failed to marshal credentials: %w", err)
 	}
 
-	ciphertext, err := encrypt(plaintext, key)
+	ciphertext, err := Encrypt(plaintext, key)
 	if err != nil {
 		return fmt.Errorf("failed to encrypt credentials: %w", err)
 	}
@@ -102,12 +106,12 @@ func ReadEncryptedCache() (*Credentials, error) {
 		return nil, fmt.Errorf("unsupported encrypted cache version: %d", version)
 	}
 
-	key, err := readCacheKey()
+	key, err := ReadCacheKey()
 	if err != nil {
 		return nil, fmt.Errorf("failed to read cache key: %w", err)
 	}
 
-	plaintext, err := decrypt(data[1:], key)
+	plaintext, err := Decrypt(data[1:], key)
 	if err != nil {
 		return nil, fmt.Errorf("failed to decrypt credentials: %w", err)
 	}
@@ -140,7 +144,8 @@ func DeleteEncryptedCache() error {
 	return nil
 }
 
-func readCacheKey() ([]byte, error) {
+// ReadCacheKey reads the encryption key from keyring or derives one from hardware ID.
+func ReadCacheKey() ([]byte, error) {
 	// Try keyring first (matches GetOrCreateCacheKey write path)
 	kr, err := openKeyring()
 	if err == nil {
@@ -158,19 +163,20 @@ func readCacheKey() ([]byte, error) {
 	key, err := os.ReadFile(keyFile)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return getDerivedKey()
+			return DeriveKey(CacheKeySalt, CacheKeyInfo)
 		}
 		return nil, err
 	}
 
 	if len(key) != keySize {
-		return getDerivedKey()
+		return DeriveKey(CacheKeySalt, CacheKeyInfo)
 	}
 
 	return key, nil
 }
 
-func encrypt(plaintext, key []byte) ([]byte, error) {
+// Encrypt encrypts plaintext with AES-256-GCM using the provided key.
+func Encrypt(plaintext, key []byte) ([]byte, error) {
 	block, err := aes.NewCipher(key)
 	if err != nil {
 		return nil, err
@@ -190,7 +196,8 @@ func encrypt(plaintext, key []byte) ([]byte, error) {
 	return ciphertext, nil
 }
 
-func decrypt(data, key []byte) ([]byte, error) {
+// Decrypt decrypts AES-256-GCM ciphertext using the provided key.
+func Decrypt(data, key []byte) ([]byte, error) {
 	if len(data) < nonceSize {
 		return nil, fmt.Errorf("ciphertext too short")
 	}
@@ -224,9 +231,12 @@ func generateRandomKey() ([]byte, error) {
 	return key, nil
 }
 
-func getDerivedKey() ([]byte, error) {
+// DeriveKey derives an encryption key from machine ID and username using HKDF.
+// The salt and info parameters provide domain separation between different uses.
+func DeriveKey(salt, info string) ([]byte, error) {
 	machineID, err := device.GetRawHardwareID()
 	if err != nil {
+		fmt.Fprintf(os.Stderr, "Warning: using fallback machine ID for key derivation: %v\n", err)
 		machineID = "fallback-machine-id"
 	}
 
@@ -237,10 +247,8 @@ func getDerivedKey() ([]byte, error) {
 	}
 
 	ikm := []byte(machineID + "|" + username)
-	salt := []byte("intentra-cache-key-v1")
-	info := []byte("credential-encryption")
 
-	hkdfReader := hkdf.New(sha256.New, ikm, salt, info)
+	hkdfReader := hkdf.New(sha256.New, ikm, []byte(salt), []byte(info))
 	key := make([]byte, keySize)
 	if _, err := io.ReadFull(hkdfReader, key); err != nil {
 		return nil, fmt.Errorf("failed to derive key: %w", err)

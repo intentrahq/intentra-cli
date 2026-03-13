@@ -44,6 +44,10 @@ func openKeyring() (keyring.Keyring, error) {
 }
 
 func getBackendsForPlatform() []keyring.BackendType {
+	if os.Getenv("INTENTRA_NO_KEYCHAIN") != "" {
+		return []keyring.BackendType{keyring.FileBackend}
+	}
+
 	switch runtime.GOOS {
 	case "darwin":
 		return []keyring.BackendType{
@@ -66,7 +70,7 @@ func getBackendsForPlatform() []keyring.BackendType {
 }
 
 func filePasswordPrompt(prompt string) (string, error) {
-	key, err := getDerivedKey()
+	key, err := DeriveKey(CacheKeySalt, CacheKeyInfo)
 	if err != nil {
 		return "", fmt.Errorf("failed to derive key for file backend: %w", err)
 	}
@@ -91,9 +95,10 @@ func storeCredentialsInKeyringUnlocked(creds *Credentials) error {
 	}
 
 	err = kr.Set(keyring.Item{
-		Key:   credentialsKey,
-		Label: "Intentra Credentials",
-		Data:  data,
+		Key:         credentialsKey,
+		Label:       "Intentra Credentials",
+		Description: "Intentra CLI Auth Creds",
+		Data:        data,
 	})
 	if err != nil {
 		return fmt.Errorf("failed to store credentials in keyring: %w", err)
@@ -163,7 +168,7 @@ func GetOrCreateCacheKey() ([]byte, error) {
 	kr, err := openKeyring()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Warning: keyring unavailable, using derived key: %v\n", err)
-		return getDerivedKey()
+		return DeriveKey(CacheKeySalt, CacheKeyInfo)
 	}
 
 	item, err := kr.Get(cacheKeyKey)
@@ -173,13 +178,14 @@ func GetOrCreateCacheKey() ([]byte, error) {
 
 	key, err := generateRandomKey()
 	if err != nil {
-		return getDerivedKey()
+		return DeriveKey(CacheKeySalt, CacheKeyInfo)
 	}
 
 	_ = kr.Set(keyring.Item{
-		Key:   cacheKeyKey,
-		Label: "Intentra Cache Key",
-		Data:  key,
+		Key:         cacheKeyKey,
+		Label:       "Intentra Cache Key",
+		Description: "Intentra CLI Auth Creds",
+		Data:        key,
 	})
 
 	return key, nil

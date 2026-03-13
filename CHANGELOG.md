@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.14.0] - 2026-03-12
+
+### Added
+- `internal/queue` package: encrypted offline scan queue with AES-256-GCM; scans that fail to sync are persisted to `~/.intentra/queue/` and auto-flushed on login or next sync
+- Queue enforces max 500 entries with FIFO eviction and 72-hour auto-expiry for stale entries
+- `INTENTRA_NO_KEYCHAIN` environment variable to force file-based keyring backend (useful for CI/headless environments)
+- `Description` field on OS keyring entries for better visibility in macOS Keychain and similar tools
+
+### Changed
+- `Encrypt`, `Decrypt`, `DeriveKey`, `ReadCacheKey` exported from `internal/auth` for cross-package use
+- `DeriveKey` accepts salt and info parameters for domain separation between credential and queue encryption keys
+- `intentra login` now flushes any offline-queued scans after successful authentication
+- `intentra sync now` flushes offline queue in addition to regular scan sync
+- `intentra sync now` warns on partial sync failure instead of returning a hard error
+- Hook handler queues scans offline when sync fails and opportunistically flushes previous queue entries in background on successful sync
+
 ## [0.13.0] - 2026-03-05
 
 ### Added
@@ -445,6 +461,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Local storage with optional server sync
 - HMAC authentication for server sync
 
+[0.14.0]: https://github.com/atbabers/intentra-cli/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/atbabers/intentra-cli/compare/v0.12.0...v0.13.0
 [0.12.0]: https://github.com/atbabers/intentra-cli/compare/v0.11.0...v0.12.0
 [0.11.0]: https://github.com/atbabers/intentra-cli/compare/v0.10.0...v0.11.0

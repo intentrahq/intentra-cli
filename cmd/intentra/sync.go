@@ -5,7 +5,9 @@ import (
 	"os"
 
 	"github.com/atbabers/intentra-cli/internal/api"
+	"github.com/atbabers/intentra-cli/internal/auth"
 	"github.com/atbabers/intentra-cli/internal/debug"
+	"github.com/atbabers/intentra-cli/internal/queue"
 	"github.com/atbabers/intentra-cli/internal/scanner"
 	"github.com/atbabers/intentra-cli/pkg/models"
 	"github.com/spf13/cobra"
@@ -78,10 +80,10 @@ func runSyncNow(cmd *cobra.Command, args []string) error {
 	}
 
 	if err := client.SendScans(pending); err != nil {
-		return fmt.Errorf("failed to sync scans: %w", err)
+		fmt.Fprintf(os.Stderr, "Warning: some scans failed to sync: %v\n", err)
+	} else {
+		fmt.Printf("✓ Successfully synced %d scans\n", len(pending))
 	}
-
-	fmt.Printf("✓ Successfully synced %d scans\n", len(pending))
 
 	preserveLocal := keepLocal || debug.Enabled
 	if preserveLocal {
@@ -106,6 +108,17 @@ func runSyncNow(cmd *cobra.Command, args []string) error {
 			}
 		}
 		fmt.Printf("Cleaned up %d local scan files (server is now source of truth)\n", deleted)
+	}
+
+	// Also flush any encrypted offline queue entries
+	if queuedCount := queue.PendingCount(); queuedCount > 0 {
+		fmt.Printf("Flushing %d offline queued scan(s)...\n", queuedCount)
+		creds, err := auth.GetValidCredentials()
+		if err != nil || creds == nil {
+			fmt.Fprintln(os.Stderr, "Warning: cannot flush offline queue - not authenticated. Run 'intentra login' first.")
+		} else {
+			queue.FlushWithJWT(creds.AccessToken)
+		}
 	}
 
 	return nil
