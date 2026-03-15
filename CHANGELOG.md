@@ -5,6 +5,15 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.15.0] - 2026-03-14
+
+### Added
+- Gzip compression for all outgoing API requests (`SendScan` and `doJWTRequest`), reducing bandwidth usage
+- `Content-Encoding: gzip` header set on compressed requests
+- Flush failure tracking: queued scans that fail 10 consecutive times are automatically dropped
+- `RecordFailure` function in `internal/queue` to track per-scan flush attempts via `.failures` sidecar files
+- `Remove` now cleans up the failure counter file alongside the scan file
+
 ## [0.14.1] - 2026-03-14
 
 ### Fixed
@@ -474,6 +483,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Local storage with optional server sync
 - HMAC authentication for server sync
 
+[0.15.0]: https://github.com/atbabers/intentra-cli/compare/v0.14.1...v0.15.0
 [0.14.1]: https://github.com/atbabers/intentra-cli/compare/v0.14.0...v0.14.1
 [0.14.0]: https://github.com/atbabers/intentra-cli/compare/v0.13.0...v0.14.0
 [0.13.0]: https://github.com/atbabers/intentra-cli/compare/v0.12.0...v0.13.0

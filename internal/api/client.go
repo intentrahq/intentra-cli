@@ -5,6 +5,7 @@ package api
 
 import (
 	"bytes"
+	"compress/gzip"
 	"crypto/hmac"
 	cryptoRand "crypto/rand"
 	"crypto/sha256"
@@ -24,6 +25,18 @@ import (
 	"github.com/atbabers/intentra-cli/internal/httputil"
 	"github.com/atbabers/intentra-cli/pkg/models"
 )
+
+func gzipCompress(data []byte) ([]byte, error) {
+	var buf bytes.Buffer
+	w := gzip.NewWriter(&buf)
+	if _, err := w.Write(data); err != nil {
+		return nil, err
+	}
+	if err := w.Close(); err != nil {
+		return nil, err
+	}
+	return buf.Bytes(), nil
+}
 
 // UserAgent is the User-Agent header value sent with all API requests.
 const UserAgent = "intentra-cli/1.0"
@@ -69,7 +82,7 @@ func NewClient(cfg *config.Config) (*Client, error) {
 	}, nil
 }
 
-// SendScan sends a single scan to the API.
+// SendScan sends a single scan to the API with gzip compression.
 func (c *Client) SendScan(scan *models.Scan) error {
 	deviceID, err := device.GetDeviceID()
 	if err != nil {
@@ -81,13 +94,19 @@ func (c *Client) SendScan(scan *models.Scan) error {
 		return fmt.Errorf("failed to marshal scan: %w", err)
 	}
 
+	compressed, err := gzipCompress(jsonBody)
+	if err != nil {
+		return fmt.Errorf("failed to compress scan: %w", err)
+	}
+
 	url := c.cfg.Server.Endpoint + "/scans"
-	req, err := http.NewRequest("POST", url, bytes.NewReader(jsonBody))
+	req, err := http.NewRequest("POST", url, bytes.NewReader(compressed))
 	if err != nil {
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Encoding", "gzip")
 	req.Header.Set("User-Agent", UserAgent)
 
 	if err := c.addAuth(req); err != nil {
@@ -220,13 +239,19 @@ func doJWTRequest(method, path, accessToken string, body []byte, acceptedStatuse
 		return fmt.Errorf("failed to get device ID: %w", err)
 	}
 
+	compressed, err := gzipCompress(body)
+	if err != nil {
+		return fmt.Errorf("failed to compress request body: %w", err)
+	}
+
 	reqURL := config.DefaultAPIEndpoint + path
-	req, err := http.NewRequest(method, reqURL, bytes.NewReader(body))
+	req, err := http.NewRequest(method, reqURL, bytes.NewReader(compressed))
 	if err != nil {
 		return fmt.Errorf("failed to create %s request: %w", method, err)
 	}
 
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Content-Encoding", "gzip")
 	req.Header.Set("User-Agent", UserAgent)
 	req.Header.Set("Authorization", "Bearer "+accessToken)
 	req.Header.Set("X-Machine-ID", deviceID)

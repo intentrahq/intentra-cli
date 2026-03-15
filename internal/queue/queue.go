@@ -21,11 +21,13 @@ import (
 )
 
 const (
-	maxQueueSize  = 500
-	maxAgeHours   = 72
-	fileExtension = ".scan.enc"
-	queueKeySalt  = "intentra-queue-key-v1"
-	queueKeyInfo  = "scan-queue-encryption"
+	maxQueueSize   = 500
+	maxAgeHours    = 72
+	maxFlushFails  = 10
+	fileExtension  = ".scan.enc"
+	failsExtension = ".failures"
+	queueKeySalt   = "intentra-queue-key-v1"
+	queueKeyInfo   = "scan-queue-encryption"
 )
 
 var (
@@ -148,11 +150,12 @@ func DequeueAll() ([]QueuedScan, error) {
 	return result, nil
 }
 
-// Remove deletes a queued scan file after successful send.
+// Remove deletes a queued scan file and its failure counter after successful send.
 func Remove(path string) {
 	if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
 		debug.Warn("failed to remove queued scan %s: %v", path, err)
 	}
+	os.Remove(failurePath(path))
 }
 
 // PendingCount returns the number of scans waiting in the queue.
@@ -190,6 +193,32 @@ func queueDir() (string, error) {
 		return "", err
 	}
 	return qDir, nil
+}
+
+// RecordFailure increments the failure counter for a queued scan.
+// Returns true if the scan should be removed (exceeded maxFlushFails).
+func RecordFailure(scanPath string) bool {
+	fp := failurePath(scanPath)
+	count := 0
+
+	data, err := os.ReadFile(fp)
+	if err == nil {
+		_, _ = fmt.Sscanf(string(data), "%d", &count)
+	}
+
+	count++
+	_ = os.WriteFile(fp, []byte(fmt.Sprintf("%d", count)), 0600)
+
+	if count >= maxFlushFails {
+		Remove(scanPath)
+		os.Remove(fp)
+		return true
+	}
+	return false
+}
+
+func failurePath(scanPath string) string {
+	return strings.TrimSuffix(scanPath, fileExtension) + failsExtension
 }
 
 func enforceQueueLimits(dir string) error {

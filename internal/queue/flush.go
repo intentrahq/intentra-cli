@@ -8,6 +8,7 @@ import (
 )
 
 // FlushWithJWT sends all queued scans using a JWT access token.
+// Scans that fail are tracked; after 10 failures a scan is dropped from the queue.
 // Returns the number of scans successfully sent.
 func FlushWithJWT(accessToken string) int {
 	queued, err := DequeueAll()
@@ -24,6 +25,9 @@ func FlushWithJWT(accessToken string) int {
 	for _, qs := range queued {
 		if err := api.SendScanWithJWT(qs.Scan, accessToken); err != nil {
 			debug.Warn("failed to flush queued scan %s: %v", qs.Scan.ID, err)
+			if removed := RecordFailure(qs.Path); removed {
+				debug.Warn("removed queued scan %s after %d failed attempts", qs.Scan.ID, maxFlushFails)
+			}
 			continue
 		}
 		Remove(qs.Path)
