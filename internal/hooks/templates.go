@@ -131,15 +131,26 @@ var claudeCodeHookTypes = []string{
 	"SubagentStart",
 	"SubagentStop",
 	"PreCompact",
+	"PostCompact",
+	"TeammateIdle",
+	"TaskCompleted",
+	"InstructionsLoaded",
+	"ConfigChange",
+	"WorktreeCreate",
+	"WorktreeRemove",
+	"Elicitation",
+	"ElicitationResult",
 }
 
-// copilotHookTypes contains all available hooks per https://docs.github.com/en/copilot/reference/hooks-configuration.
+// copilotHookTypes contains all available hooks per https://docs.github.com/en/copilot/concepts/agents/coding-agent/about-hooks.
 var copilotHookTypes = []string{
 	"sessionStart",
 	"sessionEnd",
 	"userPromptSubmitted",
 	"preToolUse",
 	"postToolUse",
+	"agentStop",
+	"subagentStop",
 	"errorOccurred",
 }
 
@@ -155,6 +166,7 @@ var windsurfHookTypes = []string{
 	"post_mcp_tool_use",
 	"pre_user_prompt",
 	"post_cascade_response",
+	"post_cascade_response_with_transcript",
 	"post_setup_worktree",
 }
 
@@ -274,4 +286,51 @@ func GenerateWindsurfHooksJSON(handlerPath string) (string, error) {
 		return "", fmt.Errorf("failed to marshal Windsurf hooks JSON: %w", err)
 	}
 	return string(data), nil
+}
+
+// geminiHookTypes contains all available hooks per https://github.com/google-gemini/gemini-cli/blob/main/docs/hooks/reference.md.
+var geminiHookTypes = []string{
+	"BeforeTool",
+	"AfterTool",
+	"BeforeAgent",
+	"AfterAgent",
+	"BeforeModel",
+	"BeforeToolSelection",
+	"AfterModel",
+	"SessionStart",
+	"SessionEnd",
+	"Notification",
+	"PreCompress",
+}
+
+// GenerateGeminiHooksJSON creates the Gemini CLI hooks configuration.
+// Returns an error if the handler path contains unsafe characters.
+func GenerateGeminiHooksJSON(handlerPath string) (map[string]any, error) {
+	if err := validateHandlerPath(handlerPath); err != nil {
+		return nil, err
+	}
+
+	cmd := handlerPath
+	if runtime.GOOS == "windows" {
+		cmd = handlerPath + ".exe"
+	}
+
+	quotedCmd := quotePathForShell(cmd)
+
+	hooks := make(map[string]any)
+	for _, hookType := range geminiHookTypes {
+		hooks[hookType] = []map[string]any{
+			{
+				"matcher": ".*",
+				"hooks": []map[string]string{
+					{
+						"type":    "command",
+						"command": quotedCmd + " hook --tool gemini --event " + hookType,
+					},
+				},
+			},
+		}
+	}
+
+	return hooks, nil
 }

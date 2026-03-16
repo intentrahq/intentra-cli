@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/atbabers/intentra-cli/pkg/models"
+	"github.com/intentrahq/intentra-cli/pkg/models"
 )
 
 func TestValidateScanID(t *testing.T) {

@@ -7,8 +7,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/atbabers/intentra-cli/internal/config"
-	"github.com/atbabers/intentra-cli/pkg/models"
+	"github.com/intentrahq/intentra-cli/internal/config"
+	"github.com/intentrahq/intentra-cli/pkg/models"
 )
 
 func TestRedactEvents(t *testing.T) {

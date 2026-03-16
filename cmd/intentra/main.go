@@ -10,9 +10,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/atbabers/intentra-cli/internal/config"
-	"github.com/atbabers/intentra-cli/internal/debug"
-	"github.com/atbabers/intentra-cli/internal/hooks"
+	"github.com/intentrahq/intentra-cli/internal/config"
+	"github.com/intentrahq/intentra-cli/internal/debug"
+	"github.com/intentrahq/intentra-cli/internal/hooks"
 	"github.com/spf13/cobra"
 )
 

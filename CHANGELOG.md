@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.16.0] - 2026-03-16
+
+### Added
+- Gemini CLI hooks generator (`GenerateGeminiHooksJSON`) with full hook type coverage
+- 12 new normalized event types: `post_compact`, `teammate_idle`, `task_completed`, `instructions_loaded`, `config_change`, `worktree_create`, `worktree_remove`, `elicitation`, `elicitation_result`, `before_tool_selection`, `pre_compress`, `response_with_transcript`
+- Claude Code hook support for `PostCompact`, `TeammateIdle`, `TaskCompleted`, `InstructionsLoaded`, `ConfigChange`, `WorktreeCreate`, `WorktreeRemove`, `Elicitation`, `ElicitationResult`
+- Copilot hook support for `agentStop` and `subagentStop`
+- Windsurf hook support for `post_cascade_response_with_transcript`
+
+### Changed
+- Migrated GitHub organization from `atbabers` to `intentrahq` across all references (goreleaser, install scripts, issue templates, documentation, CHANGELOG links)
+- Migrated Go module path from `github.com/atbabers/intentra-cli` to `github.com/intentrahq/intentra-cli`
+- Homebrew tap updated to `intentrahq/intentra/intentra`
+- Refactored `ParseMCPDoubleUnderscoreName` to use `strings.Cut` for cleaner parsing
+
+### Fixed
+- Corrected Gemini normalizer mappings for `BeforeToolSelection` and `PreCompress` event types
+
 ## [0.15.1] - 2026-03-15
 
 ### Fixed
@@ -490,27 +508,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Local storage with optional server sync
 - HMAC authentication for server sync
 
-[0.15.1]: https://github.com/atbabers/intentra-cli/compare/v0.15.0...v0.15.1
-[0.15.0]: https://github.com/atbabers/intentra-cli/compare/v0.14.1...v0.15.0
-[0.14.1]: https://github.com/atbabers/intentra-cli/compare/v0.14.0...v0.14.1
-[0.14.0]: https://github.com/atbabers/intentra-cli/compare/v0.13.0...v0.14.0
-[0.13.0]: https://github.com/atbabers/intentra-cli/compare/v0.12.0...v0.13.0
-[0.12.0]: https://github.com/atbabers/intentra-cli/compare/v0.11.0...v0.12.0
-[0.11.0]: https://github.com/atbabers/intentra-cli/compare/v0.10.0...v0.11.0
-[0.10.0]: https://github.com/atbabers/intentra-cli/compare/v0.9.1...v0.10.0
-[0.9.1]: https://github.com/atbabers/intentra-cli/compare/v0.9.0...v0.9.1
-[0.9.0]: https://github.com/atbabers/intentra-cli/compare/v0.8.2...v0.9.0
-[0.8.2]: https://github.com/atbabers/intentra-cli/compare/v0.8.1...v0.8.2
-[0.8.1]: https://github.com/atbabers/intentra-cli/compare/v0.8.0...v0.8.1
-[0.8.0]: https://github.com/atbabers/intentra-cli/compare/v0.7.0...v0.8.0
-[0.7.0]: https://github.com/atbabers/intentra-cli/compare/v0.6.0...v0.7.0
-[0.6.0]: https://github.com/atbabers/intentra-cli/compare/v0.5.0...v0.6.0
-[0.5.0]: https://github.com/atbabers/intentra-cli/compare/v0.4.0...v0.5.0
-[0.4.0]: https://github.com/atbabers/intentra-cli/compare/v0.3.5...v0.4.0
-[0.3.5]: https://github.com/atbabers/intentra-cli/compare/v0.3.0...v0.3.5
-[0.3.0]: https://github.com/atbabers/intentra-cli/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/atbabers/intentra-cli/compare/v0.1.3...v0.2.0
-[0.1.3]: https://github.com/atbabers/intentra-cli/compare/v0.1.2...v0.1.3
-[0.1.2]: https://github.com/atbabers/intentra-cli/compare/v0.1.1...v0.1.2
-[0.1.1]: https://github.com/atbabers/intentra-cli/compare/v0.1.0...v0.1.1
-[0.1.0]: https://github.com/atbabers/intentra-cli/releases/tag/v0.1.0
+[0.16.0]: https://github.com/intentrahq/intentra-cli/compare/v0.15.1...v0.16.0
+[0.15.1]: https://github.com/intentrahq/intentra-cli/compare/v0.15.0...v0.15.1
+[0.15.0]: https://github.com/intentrahq/intentra-cli/compare/v0.14.1...v0.15.0
+[0.14.1]: https://github.com/intentrahq/intentra-cli/compare/v0.14.0...v0.14.1
+[0.14.0]: https://github.com/intentrahq/intentra-cli/compare/v0.13.0...v0.14.0
+[0.13.0]: https://github.com/intentrahq/intentra-cli/compare/v0.12.0...v0.13.0
+[0.12.0]: https://github.com/intentrahq/intentra-cli/compare/v0.11.0...v0.12.0
+[0.11.0]: https://github.com/intentrahq/intentra-cli/compare/v0.10.0...v0.11.0
+[0.10.0]: https://github.com/intentrahq/intentra-cli/compare/v0.9.1...v0.10.0
+[0.9.1]: https://github.com/intentrahq/intentra-cli/compare/v0.9.0...v0.9.1
+[0.9.0]: https://github.com/intentrahq/intentra-cli/compare/v0.8.2...v0.9.0
+[0.8.2]: https://github.com/intentrahq/intentra-cli/compare/v0.8.1...v0.8.2
+[0.8.1]: https://github.com/intentrahq/intentra-cli/compare/v0.8.0...v0.8.1
+[0.8.0]: https://github.com/intentrahq/intentra-cli/compare/v0.7.0...v0.8.0
+[0.7.0]: https://github.com/intentrahq/intentra-cli/compare/v0.6.0...v0.7.0
+[0.6.0]: https://github.com/intentrahq/intentra-cli/compare/v0.5.0...v0.6.0
+[0.5.0]: https://github.com/intentrahq/intentra-cli/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/intentrahq/intentra-cli/compare/v0.3.5...v0.4.0
+[0.3.5]: https://github.com/intentrahq/intentra-cli/compare/v0.3.0...v0.3.5
+[0.3.0]: https://github.com/intentrahq/intentra-cli/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/intentrahq/intentra-cli/compare/v0.1.3...v0.2.0
+[0.1.3]: https://github.com/intentrahq/intentra-cli/compare/v0.1.2...v0.1.3
+[0.1.2]: https://github.com/intentrahq/intentra-cli/compare/v0.1.1...v0.1.2
+[0.1.1]: https://github.com/intentrahq/intentra-cli/compare/v0.1.0...v0.1.1
+[0.1.0]: https://github.com/intentrahq/intentra-cli/releases/tag/v0.1.0

@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/99designs/keyring"
-	"github.com/atbabers/intentra-cli/internal/config"
+	"github.com/intentrahq/intentra-cli/internal/config"
 )
 
 const (

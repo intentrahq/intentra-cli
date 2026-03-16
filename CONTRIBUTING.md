@@ -46,7 +46,7 @@ Feature requests are welcome! Please:
 ### Getting Started
 
 ```bash
-git clone https://github.com/atbabers/intentra-cli.git
+git clone https://github.com/intentrahq/intentra-cli.git
 cd intentra-cli
 make build
 make test
@@ -168,8 +168,8 @@ Releases are automated via GitHub Actions when a new tag is pushed:
 
 ## Getting Help
 
-- Open a [GitHub Issue](https://github.com/atbabers/intentra-cli/issues) for bugs or feature requests
-- Start a [Discussion](https://github.com/atbabers/intentra-cli/discussions) for questions
+- Open a [GitHub Issue](https://github.com/intentrahq/intentra-cli/issues) for bugs or feature requests
+- Start a [Discussion](https://github.com/intentrahq/intentra-cli/discussions) for questions
 
 ## License
 

@@ -14,10 +14,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/atbabers/intentra-cli/internal/auth"
-	"github.com/atbabers/intentra-cli/internal/config"
-	"github.com/atbabers/intentra-cli/internal/debug"
-	"github.com/atbabers/intentra-cli/pkg/models"
+	"github.com/intentrahq/intentra-cli/internal/auth"
+	"github.com/intentrahq/intentra-cli/internal/config"
+	"github.com/intentrahq/intentra-cli/internal/debug"
+	"github.com/intentrahq/intentra-cli/pkg/models"
 )
 
 const (

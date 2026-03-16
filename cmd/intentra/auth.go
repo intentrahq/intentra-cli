@@ -12,12 +12,12 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/atbabers/intentra-cli/internal/auth"
-	"github.com/atbabers/intentra-cli/internal/config"
-	"github.com/atbabers/intentra-cli/internal/debug"
-	"github.com/atbabers/intentra-cli/internal/device"
-	"github.com/atbabers/intentra-cli/internal/httputil"
-	"github.com/atbabers/intentra-cli/internal/queue"
+	"github.com/intentrahq/intentra-cli/internal/auth"
+	"github.com/intentrahq/intentra-cli/internal/config"
+	"github.com/intentrahq/intentra-cli/internal/debug"
+	"github.com/intentrahq/intentra-cli/internal/device"
+	"github.com/intentrahq/intentra-cli/internal/httputil"
+	"github.com/intentrahq/intentra-cli/internal/queue"
 	"github.com/spf13/cobra"
 )
 

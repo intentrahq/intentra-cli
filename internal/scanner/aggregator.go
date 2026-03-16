@@ -7,7 +7,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/atbabers/intentra-cli/pkg/models"
+	"github.com/intentrahq/intentra-cli/pkg/models"
 )
 
 // modelPricing contains pricing per token (in USD) for various models.

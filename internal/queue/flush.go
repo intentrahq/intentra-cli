@@ -3,8 +3,8 @@ package queue
 import (
 	"fmt"
 
-	"github.com/atbabers/intentra-cli/internal/api"
-	"github.com/atbabers/intentra-cli/internal/debug"
+	"github.com/intentrahq/intentra-cli/internal/api"
+	"github.com/intentrahq/intentra-cli/internal/debug"
 )
 
 // FlushWithJWT sends all queued scans using a JWT access token.

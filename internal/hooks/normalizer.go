@@ -3,7 +3,7 @@
 // in pkg/models/event.go; aliases are provided here for package-level convenience.
 package hooks
 
-import "github.com/atbabers/intentra-cli/pkg/models"
+import "github.com/intentrahq/intentra-cli/pkg/models"
 
 // NormalizedEventType is an alias for models.NormalizedEventType.
 type NormalizedEventType = models.NormalizedEventType
@@ -44,6 +44,19 @@ const (
 	EventToolUseFailure    = models.EventToolUseFailure
 	EventWorktreeSetup     = models.EventWorktreeSetup
 	EventUnknown           = models.EventUnknown
+
+	EventPostCompact            = models.EventPostCompact
+	EventTeammateIdle           = models.EventTeammateIdle
+	EventTaskCompleted          = models.EventTaskCompleted
+	EventInstructionsLoaded     = models.EventInstructionsLoaded
+	EventConfigChange           = models.EventConfigChange
+	EventWorktreeCreate         = models.EventWorktreeCreate
+	EventWorktreeRemove         = models.EventWorktreeRemove
+	EventElicitation            = models.EventElicitation
+	EventElicitationResult      = models.EventElicitationResult
+	EventBeforeToolSelection    = models.EventBeforeToolSelection
+	EventPreCompress            = models.EventPreCompress
+	EventResponseWithTranscript = models.EventResponseWithTranscript
 )
 
 // Normalizer defines the interface for tool-specific event normalizers.
@@ -126,18 +139,27 @@ var toolMappings = map[string]map[string]NormalizedEventType{
 		"stop":                 EventStop,
 	},
 	"claude": {
-		"SessionStart":       EventSessionStart,
-		"SessionEnd":         EventSessionEnd,
-		"UserPromptSubmit":   EventBeforePrompt,
-		"PreToolUse":         EventBeforeTool,
-		"PostToolUse":        EventAfterTool,
-		"PostToolUseFailure": EventToolUseFailure,
-		"PermissionRequest":  EventPermissionRequest,
-		"Notification":       EventNotification,
-		"Stop":               EventStop,
-		"SubagentStart":      EventBeforePrompt,
-		"SubagentStop":       EventSubagentStop,
-		"PreCompact":         EventPreCompact,
+		"SessionStart":        EventSessionStart,
+		"SessionEnd":          EventSessionEnd,
+		"UserPromptSubmit":    EventBeforePrompt,
+		"PreToolUse":          EventBeforeTool,
+		"PostToolUse":         EventAfterTool,
+		"PostToolUseFailure":  EventToolUseFailure,
+		"PermissionRequest":   EventPermissionRequest,
+		"Notification":        EventNotification,
+		"Stop":                EventStop,
+		"SubagentStart":       EventSubagentStart,
+		"SubagentStop":        EventSubagentStop,
+		"PreCompact":          EventPreCompact,
+		"PostCompact":         EventPostCompact,
+		"TeammateIdle":        EventTeammateIdle,
+		"TaskCompleted":       EventTaskCompleted,
+		"InstructionsLoaded":  EventInstructionsLoaded,
+		"ConfigChange":        EventConfigChange,
+		"WorktreeCreate":      EventWorktreeCreate,
+		"WorktreeRemove":      EventWorktreeRemove,
+		"Elicitation":         EventElicitation,
+		"ElicitationResult":   EventElicitationResult,
 	},
 	"copilot": {
 		"sessionStart":        EventSessionStart,
@@ -145,20 +167,23 @@ var toolMappings = map[string]map[string]NormalizedEventType{
 		"userPromptSubmitted": EventBeforePrompt,
 		"preToolUse":          EventBeforeTool,
 		"postToolUse":         EventAfterTool,
+		"agentStop":           EventStop,
+		"subagentStop":        EventSubagentStop,
 		"errorOccurred":       EventError,
 	},
 	"windsurf": {
-		"pre_user_prompt":       EventBeforePrompt,
-		"post_cascade_response": EventAfterResponse,
-		"pre_read_code":         EventBeforeFileRead,
-		"post_read_code":        EventAfterFileRead,
-		"pre_write_code":        EventBeforeFileEdit,
-		"post_write_code":       EventAfterFileEdit,
-		"pre_run_command":       EventBeforeShell,
-		"post_run_command":      EventAfterShell,
-		"pre_mcp_tool_use":      EventBeforeMCP,
-		"post_mcp_tool_use":     EventAfterMCP,
-		"post_setup_worktree":   EventWorktreeSetup,
+		"pre_user_prompt":                     EventBeforePrompt,
+		"post_cascade_response":               EventAfterResponse,
+		"post_cascade_response_with_transcript": EventResponseWithTranscript,
+		"pre_read_code":                       EventBeforeFileRead,
+		"post_read_code":                      EventAfterFileRead,
+		"pre_write_code":                      EventBeforeFileEdit,
+		"post_write_code":                     EventAfterFileEdit,
+		"pre_run_command":                     EventBeforeShell,
+		"post_run_command":                    EventAfterShell,
+		"pre_mcp_tool_use":                    EventBeforeMCP,
+		"post_mcp_tool_use":                   EventAfterMCP,
+		"post_setup_worktree":                 EventWorktreeSetup,
 	},
 	"gemini": {
 		"SessionStart":        EventSessionStart,
@@ -167,10 +192,10 @@ var toolMappings = map[string]map[string]NormalizedEventType{
 		"AfterAgent":          EventAfterResponse,
 		"BeforeModel":         EventBeforeModel,
 		"AfterModel":          EventAfterModel,
-		"BeforeToolSelection": EventToolSelection,
+		"BeforeToolSelection": EventBeforeToolSelection,
 		"BeforeTool":          EventBeforeTool,
 		"AfterTool":           EventAfterTool,
-		"PreCompress":         EventPreCompact,
+		"PreCompress":         EventPreCompress,
 		"Notification":        EventNotification,
 	},
 }

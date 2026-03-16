@@ -10,7 +10,7 @@
 
 $ErrorActionPreference = "Stop"
 
-$GitHubOwner = "atbabers"
+$GitHubOwner = "intentrahq"
 $GitHubRepo = "intentra-cli"
 $BinaryName = "intentra"
 

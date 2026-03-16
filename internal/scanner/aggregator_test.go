@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/atbabers/intentra-cli/pkg/models"
+	"github.com/intentrahq/intentra-cli/pkg/models"
 )
 
 func TestAggregateEvents(t *testing.T) {

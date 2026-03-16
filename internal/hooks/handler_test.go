@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/atbabers/intentra-cli/internal/config"
+	"github.com/intentrahq/intentra-cli/internal/config"
 )
 
 func TestProcessEvent_ParsesEvent(t *testing.T) {

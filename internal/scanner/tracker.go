@@ -10,8 +10,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/atbabers/intentra-cli/internal/config"
-	"github.com/atbabers/intentra-cli/pkg/models"
+	"github.com/intentrahq/intentra-cli/internal/config"
+	"github.com/intentrahq/intentra-cli/pkg/models"
 )
 
 // validScanIDPattern validates scan IDs to prevent path traversal attacks.

@@ -12,8 +12,8 @@ import (
 	"os/user"
 	"path/filepath"
 
-	"github.com/atbabers/intentra-cli/internal/config"
-	"github.com/atbabers/intentra-cli/internal/device"
+	"github.com/intentrahq/intentra-cli/internal/config"
+	"github.com/intentrahq/intentra-cli/internal/device"
 	"golang.org/x/crypto/hkdf"
 )
 

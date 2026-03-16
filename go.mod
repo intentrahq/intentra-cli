@@ -1,4 +1,4 @@
-module github.com/atbabers/intentra-cli
+module github.com/intentrahq/intentra-cli
 
 go 1.23.0
 

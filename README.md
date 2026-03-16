@@ -19,7 +19,7 @@ curl -fsSL https://install.intentra.sh | sh
 **Homebrew:**
 
 ```bash
-brew install atbabers/intentra/intentra
+brew install intentrahq/intentra/intentra
 ```
 
 **Windows (PowerShell):**

@@ -23,7 +23,7 @@ builds:
     ldflags:
       - -s -w
       - -X main.version={{.Version}}
-      - -X github.com/atbabers/intentra-cli/internal/device.Version={{.Version}}
+      - -X github.com/intentrahq/intentra-cli/internal/device.Version={{.Version}}
 
 archives:
   - id: default
@@ -57,7 +57,7 @@ changelog:
 
 release:
   github:
-    owner: atbabers
+    owner: intentrahq
     name: intentra-cli
   draft: false
   prerelease: auto
@@ -65,7 +65,7 @@ release:
 
 brews:
   - repository:
-      owner: atbabers
+      owner: intentrahq
       name: homebrew-intentra
       token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     directory: Formula

@@ -21,14 +21,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/atbabers/intentra-cli/internal/api"
-	"github.com/atbabers/intentra-cli/internal/auth"
-	"github.com/atbabers/intentra-cli/internal/config"
-	"github.com/atbabers/intentra-cli/internal/debug"
-	"github.com/atbabers/intentra-cli/internal/device"
-	"github.com/atbabers/intentra-cli/internal/queue"
-	"github.com/atbabers/intentra-cli/internal/scanner"
-	"github.com/atbabers/intentra-cli/pkg/models"
+	"github.com/intentrahq/intentra-cli/internal/api"
+	"github.com/intentrahq/intentra-cli/internal/auth"
+	"github.com/intentrahq/intentra-cli/internal/config"
+	"github.com/intentrahq/intentra-cli/internal/debug"
+	"github.com/intentrahq/intentra-cli/internal/device"
+	"github.com/intentrahq/intentra-cli/internal/queue"
+	"github.com/intentrahq/intentra-cli/internal/scanner"
+	"github.com/intentrahq/intentra-cli/pkg/models"
 )
 
 const (

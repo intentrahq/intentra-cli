@@ -12,8 +12,8 @@ import (
 	"os"
 	"time"
 
-	"github.com/atbabers/intentra-cli/internal/config"
-	"github.com/atbabers/intentra-cli/internal/httputil"
+	"github.com/intentrahq/intentra-cli/internal/config"
+	"github.com/intentrahq/intentra-cli/internal/httputil"
 )
 
 // Credentials represents stored authentication credentials.

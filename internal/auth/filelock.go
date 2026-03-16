@@ -8,7 +8,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/atbabers/intentra-cli/internal/config"
+	"github.com/intentrahq/intentra-cli/internal/config"
 )
 
 const (

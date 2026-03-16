@@ -8,9 +8,9 @@ import (
 	"text/tabwriter"
 	"time"
 
-	"github.com/atbabers/intentra-cli/internal/api"
-	"github.com/atbabers/intentra-cli/internal/scanner"
-	"github.com/atbabers/intentra-cli/pkg/models"
+	"github.com/intentrahq/intentra-cli/internal/api"
+	"github.com/intentrahq/intentra-cli/internal/scanner"
+	"github.com/intentrahq/intentra-cli/pkg/models"
 	"github.com/spf13/cobra"
 )
 

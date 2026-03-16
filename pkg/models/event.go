@@ -102,11 +102,11 @@ func ParseMCPDoubleUnderscoreName(toolName string) (serverName, mcpToolName stri
 		return "", "", false
 	}
 	rest := toolName[5:]
-	idx := strings.Index(rest, "__")
-	if idx < 0 {
+	serverName, mcpToolName, found := strings.Cut(rest, "__")
+	if !found {
 		return rest, "", true
 	}
-	return rest[:idx], rest[idx+2:], true
+	return serverName, mcpToolName, true
 }
 
 // NormalizedEventType represents a unified event type across all AI coding tools.
@@ -148,6 +148,19 @@ const (
 	EventToolUseFailure    NormalizedEventType = "tool_use_failure"
 	EventWorktreeSetup     NormalizedEventType = "worktree_setup"
 	EventUnknown           NormalizedEventType = "unknown"
+
+	EventPostCompact            NormalizedEventType = "post_compact"
+	EventTeammateIdle           NormalizedEventType = "teammate_idle"
+	EventTaskCompleted          NormalizedEventType = "task_completed"
+	EventInstructionsLoaded     NormalizedEventType = "instructions_loaded"
+	EventConfigChange           NormalizedEventType = "config_change"
+	EventWorktreeCreate         NormalizedEventType = "worktree_create"
+	EventWorktreeRemove         NormalizedEventType = "worktree_remove"
+	EventElicitation            NormalizedEventType = "elicitation"
+	EventElicitationResult      NormalizedEventType = "elicitation_result"
+	EventBeforeToolSelection    NormalizedEventType = "before_tool_selection"
+	EventPreCompress            NormalizedEventType = "pre_compress"
+	EventResponseWithTranscript NormalizedEventType = "response_with_transcript"
 )
 
 // IsLLMCallEvent returns true if the event represents an LLM call.

@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-GITHUB_OWNER="atbabers"
+GITHUB_OWNER="intentrahq"
 GITHUB_REPO="intentra-cli"
 BINARY_NAME="intentra"
 INSTALL_DIR="/usr/local/bin"

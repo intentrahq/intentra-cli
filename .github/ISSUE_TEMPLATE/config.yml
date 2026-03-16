@@ -1,8 +1,8 @@
 blank_issues_enabled: true
 contact_links:
   - name: Discussions
-    url: https://github.com/atbabers/intentra-cli/discussions
+    url: https://github.com/intentrahq/intentra-cli/discussions
     about: Ask questions or discuss ideas
   - name: Security Issues
-    url: https://github.com/atbabers/intentra-cli/security/policy
+    url: https://github.com/intentrahq/intentra-cli/security/policy
     about: Report security vulnerabilities (do not use public issues)

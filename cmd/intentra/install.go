@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/atbabers/intentra-cli/internal/hooks"
+	"github.com/intentrahq/intentra-cli/internal/hooks"
 	"github.com/spf13/cobra"
 )
 
