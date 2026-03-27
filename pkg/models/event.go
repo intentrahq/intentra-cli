@@ -13,6 +13,16 @@ import (
 	"time"
 )
 
+// TokenBreakdown provides per-category token attribution for context analysis.
+type TokenBreakdown struct {
+	SystemTokens   int `json:"system_tokens,omitempty"`
+	UserTokens     int `json:"user_tokens,omitempty"`
+	ToolTokens     int `json:"tool_tokens,omitempty"`
+	ThinkingTokens int `json:"thinking_tokens,omitempty"`
+	SubagentTokens int `json:"subagent_tokens,omitempty"`
+	ContextFiles   int `json:"context_files_tokens,omitempty"`
+}
+
 // HookType represents the native hook event type from AI coding tools.
 // This is the raw event type as received from the tool (camelCase, PascalCase, or snake_case).
 type HookType string
@@ -58,6 +68,12 @@ type Event struct {
 	MessagesToCompact   int    `json:"messages_to_compact,omitempty"`
 	IsFirstCompaction   *bool  `json:"is_first_compaction,omitempty"`
 	CompactionTrigger   string `json:"compaction_trigger,omitempty"`
+
+	ParentSessionID    string          `json:"parent_session_id,omitempty"`
+	SubagentName       string          `json:"subagent_name,omitempty"`
+	SubagentRole       string          `json:"subagent_role,omitempty"`
+	SubagentDepth      int             `json:"subagent_depth,omitempty"`
+	TokenBreakdownData *TokenBreakdown `json:"token_breakdown,omitempty"`
 
 	Error string `json:"error,omitempty"`
 }

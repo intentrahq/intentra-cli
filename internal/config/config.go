@@ -32,6 +32,10 @@ type Config struct {
 	// Debug mode enables HTTP request logging and local scan saving
 	Debug bool `mapstructure:"debug"`
 
+	// RichTraces enables inclusion of tool inputs/outputs and command content in event payloads.
+	// Controlled via INTENTRA_RICH_TRACES environment variable or config key rich_traces.
+	RichTraces bool `mapstructure:"rich_traces"`
+
 	// Server sync configuration (optional - for team deployments)
 	Server ServerConfig `mapstructure:"server"`
 
@@ -280,6 +284,9 @@ func (cfg *Config) applyEnvOverrides() {
 	if endpoint := os.Getenv("INTENTRA_SERVER_ENDPOINT"); endpoint != "" {
 		cfg.Server.Enabled = true
 		cfg.Server.Endpoint = endpoint
+	}
+	if os.Getenv("INTENTRA_RICH_TRACES") == "true" || os.Getenv("INTENTRA_RICH_TRACES") == "1" {
+		cfg.RichTraces = true
 	}
 }
 

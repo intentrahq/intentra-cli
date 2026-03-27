@@ -164,6 +164,16 @@ server:
       secret: "intentra_sk_..."
 ```
 
+### Rich Traces
+
+Enable detailed tool call capture for the [Session Deep Dive](https://intentra.sh/docs/guides/concepts#session-deep-dive) feature:
+
+```bash
+export INTENTRA_RICH_TRACES=true
+```
+
+When enabled, tool call inputs and outputs are captured alongside standard event data. Content is automatically redacted for secrets and truncated to 10KB per field. Requires organization-level enablement in Intentra dashboard settings.
+
 ## Documentation
 
 Full documentation: [docs.intentra.sh](https://docs.intentra.sh)

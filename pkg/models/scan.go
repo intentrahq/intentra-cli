@@ -3,7 +3,6 @@ package models
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"os"
 	"strings"
 	"sync"
@@ -124,7 +123,8 @@ func SanitizePath(path string) string {
 
 // BuildAPIPayload constructs the JSON-serializable map for sending a scan to the API.
 // The deviceID parameter is the caller's device identifier.
-func (s *Scan) BuildAPIPayload(deviceID string) map[string]any {
+// The richTraces parameter controls whether tool inputs/outputs and command content are included.
+func (s *Scan) BuildAPIPayload(deviceID string, richTraces bool) map[string]any {
 	durationMs := int64(0)
 	if !s.EndTime.IsZero() && !s.StartTime.IsZero() {
 		durationMs = s.EndTime.Sub(s.StartTime).Milliseconds()
@@ -135,7 +135,7 @@ func (s *Scan) BuildAPIPayload(deviceID string) map[string]any {
 		sessionID = s.Source.SessionID
 	}
 
-	events := buildEventPayload(s.RawEvents, s.Events)
+	events := buildEventPayload(s.RawEvents, s.Events, richTraces)
 
 	body := map[string]any{
 		"tool":            s.Tool,
@@ -196,7 +196,8 @@ func (s *Scan) BuildAPIPayload(deviceID string) map[string]any {
 }
 
 // buildEventPayload converts raw events or structured events into API-ready maps.
-func buildEventPayload(rawEvents []map[string]any, events []Event) []map[string]any {
+// When richTraces is true, tool inputs/outputs and command content are included (truncated to 10KB).
+func buildEventPayload(rawEvents []map[string]any, events []Event, richTraces bool) []map[string]any {
 	if len(rawEvents) > 0 {
 		return rawEvents
 	}
@@ -208,12 +209,7 @@ func buildEventPayload(rawEvents []map[string]any, events []Event) []map[string]
 			"normalized_type": ev.NormalizedType,
 			"timestamp":       ev.Timestamp.Format(time.RFC3339Nano),
 			"tool_name":       ev.ToolName,
-			"command":         ev.Command,
-			"command_output":  ev.CommandOutput,
 			"file_path":       ev.FilePath,
-			"prompt":          ev.Prompt,
-			"response":        ev.Response,
-			"thought":         ev.Thought,
 			"duration_ms":     ev.DurationMs,
 			"conversation_id": ev.ConversationID,
 			"session_id":      ev.SessionID,
@@ -244,17 +240,50 @@ func buildEventPayload(rawEvents []map[string]any, events []Event) []map[string]
 		if ev.IsFirstCompaction != nil {
 			evMap["is_first_compaction"] = *ev.IsFirstCompaction
 		}
-		if len(ev.ToolInput) > 0 {
-			var toolInput map[string]any
-			if err := json.Unmarshal(ev.ToolInput, &toolInput); err == nil {
-				evMap["tool_input"] = toolInput
+		if richTraces {
+			if len(ev.ToolInput) > 0 {
+				input := string(ev.ToolInput)
+				if len(input) > 10000 {
+					input = input[:10000]
+				}
+				evMap["tool_input"] = input
+			}
+			if len(ev.ToolOutput) > 0 {
+				output := string(ev.ToolOutput)
+				if len(output) > 10000 {
+					output = output[:10000]
+				}
+				evMap["tool_output"] = output
+			}
+			if ev.Command != "" {
+				cmd := ev.Command
+				if len(cmd) > 10000 {
+					cmd = cmd[:10000]
+				}
+				evMap["command"] = cmd
+			}
+			if ev.CommandOutput != "" {
+				cmdOut := ev.CommandOutput
+				if len(cmdOut) > 10000 {
+					cmdOut = cmdOut[:10000]
+				}
+				evMap["command_output"] = cmdOut
 			}
 		}
-		if len(ev.ToolOutput) > 0 {
-			var toolOutput any
-			if err := json.Unmarshal(ev.ToolOutput, &toolOutput); err == nil {
-				evMap["tool_output"] = toolOutput
-			}
+		if ev.ParentSessionID != "" {
+			evMap["parent_session_id"] = ev.ParentSessionID
+		}
+		if ev.SubagentName != "" {
+			evMap["subagent_name"] = ev.SubagentName
+		}
+		if ev.SubagentRole != "" {
+			evMap["subagent_role"] = ev.SubagentRole
+		}
+		if ev.SubagentDepth > 0 {
+			evMap["subagent_depth"] = ev.SubagentDepth
+		}
+		if ev.TokenBreakdownData != nil {
+			evMap["token_breakdown"] = ev.TokenBreakdownData
 		}
 		result = append(result, evMap)
 	}

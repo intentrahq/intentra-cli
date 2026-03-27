@@ -89,7 +89,7 @@ func (c *Client) SendScan(scan *models.Scan) error {
 		return fmt.Errorf("failed to get device ID: %w", err)
 	}
 
-	jsonBody, err := json.Marshal(scan.BuildAPIPayload(deviceID))
+	jsonBody, err := json.Marshal(scan.BuildAPIPayload(deviceID, c.cfg.RichTraces))
 	if err != nil {
 		return fmt.Errorf("failed to marshal scan: %w", err)
 	}
@@ -265,7 +265,7 @@ func SendScanWithJWT(scan *models.Scan, accessToken string) error {
 		return fmt.Errorf("failed to get device ID: %w", err)
 	}
 
-	jsonBody, err := json.Marshal(scan.BuildAPIPayload(deviceID))
+	jsonBody, err := json.Marshal(scan.BuildAPIPayload(deviceID, false))
 	if err != nil {
 		return fmt.Errorf("failed to marshal scan: %w", err)
 	}

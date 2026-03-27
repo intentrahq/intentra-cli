@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.18.0] - 2026-03-27
+
+### Added
+- Subagent hierarchy tracking: `parent_session_id`, `subagent_name`, `subagent_role`, `subagent_depth` fields on events
+- `TokenBreakdown` struct for per-category token attribution
+- Rich traces support: opt-in capture of tool call inputs/outputs with automatic redaction and 10KB truncation
+- `INTENTRA_RICH_TRACES` environment variable and `rich_traces` config option
+- README documentation for rich traces configuration
+
+### Changed
+- `BuildAPIPayload` and `buildEventPayload` now accept a `richTraces` parameter controlling inclusion of tool inputs/outputs and command content
+- Tool input/output sent as truncated strings (max 10KB) instead of parsed JSON objects when rich traces enabled
+- `command` and `command_output` fields only included in event payload when rich traces is enabled
+- `prompt`, `response`, and `thought` fields removed from structured event payload (available via rich traces or raw events)
+
 ## [0.17.0] - 2026-03-23
 
 ### Added
@@ -543,6 +558,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Local storage with optional server sync
 - HMAC authentication for server sync
 
+[0.18.0]: https://github.com/intentrahq/intentra-cli/compare/v0.17.0...v0.18.0
 [0.17.0]: https://github.com/intentrahq/intentra-cli/compare/v0.16.1...v0.17.0
 [0.16.1]: https://github.com/intentrahq/intentra-cli/compare/v0.16.0...v0.16.1
 [0.16.0]: https://github.com/intentrahq/intentra-cli/compare/v0.15.1...v0.16.0

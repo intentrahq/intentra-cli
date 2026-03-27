@@ -93,7 +93,7 @@ func TestBuildAPIPayload(t *testing.T) {
 		scan.StartTime, _ = time.Parse(time.RFC3339, "2025-01-01T00:00:00Z")
 		scan.EndTime, _ = time.Parse(time.RFC3339, "2025-01-01T00:05:00Z")
 
-		payload := scan.BuildAPIPayload("device-abc")
+		payload := scan.BuildAPIPayload("device-abc", false)
 
 		if payload["tool"] != "cursor" {
 			t.Errorf("tool = %v, want cursor", payload["tool"])
@@ -123,7 +123,7 @@ func TestBuildAPIPayload(t *testing.T) {
 
 	t.Run("optional fields omitted when empty", func(t *testing.T) {
 		scan := &Scan{Tool: "claude"}
-		payload := scan.BuildAPIPayload("dev-1")
+		payload := scan.BuildAPIPayload("dev-1", false)
 
 		if _, ok := payload["mcp_tool_usage"]; ok {
 			t.Error("mcp_tool_usage should be omitted when empty")
@@ -148,7 +148,7 @@ func TestBuildAPIPayload(t *testing.T) {
 			RepoURLHash:      "abc123",
 			BranchName:       "main",
 		}
-		payload := scan.BuildAPIPayload("dev-1")
+		payload := scan.BuildAPIPayload("dev-1", false)
 
 		if payload["session_end_reason"] != "user_exit" {
 			t.Errorf("session_end_reason = %v", payload["session_end_reason"])
@@ -170,7 +170,7 @@ func TestBuildAPIPayload(t *testing.T) {
 
 	t.Run("nil source gives empty session_id", func(t *testing.T) {
 		scan := &Scan{Tool: "cursor"}
-		payload := scan.BuildAPIPayload("dev-1")
+		payload := scan.BuildAPIPayload("dev-1", false)
 		if payload["session_id"] != "" {
 			t.Errorf("session_id should be empty, got %v", payload["session_id"])
 		}
@@ -179,7 +179,7 @@ func TestBuildAPIPayload(t *testing.T) {
 	t.Run("timestamp format", func(t *testing.T) {
 		scan := &Scan{Tool: "cursor"}
 		scan.StartTime, _ = time.Parse(time.RFC3339Nano, "2025-06-15T10:30:00.123456789Z")
-		payload := scan.BuildAPIPayload("dev-1")
+		payload := scan.BuildAPIPayload("dev-1", false)
 		startedAt, ok := payload["started_at"].(string)
 		if !ok {
 			t.Fatal("started_at not a string")
